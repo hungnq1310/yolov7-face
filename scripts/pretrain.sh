@@ -1,15 +1,16 @@
-python -m torch.distributed.launch --nproc_per_node 2 --master_port 9527 train.py \
+CUDA_VISIBLE_DEVICES=0 python train.py \
   --epochs 300 \
   --workers 8 \
-  --device 0,1 \
-  --batch-size 64 \
-  --data data/widerface.yaml \
+  --device 0 \
+  --batch-size 12 \
+  --data data/body_pose.yaml \
   --img 640 640 \
-  --cfg cfg/yolov7-tiny.yaml \
-  --name yolov7-tiny-pretrain \
+  --cfg cfg/yolov7.yaml \
+  --name yolov7-pretrain \
   --hyp data/hyp.scratch.tiny.yaml \
-  --weight weights/yolov7-tiny.pt \
+  --weight weights/yolov7-face.pt \
   --multilosses True \
-  --kpt-label 5 \
-  --sync-bn \
-  --warmup
+  --kpt-label 14 \
+  --detect-layer IKeypointBody \
+  --warmup True \
+  --sync-bn 
