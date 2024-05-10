@@ -220,7 +220,7 @@ def train(hyp, opt, device, tb_writer=None):
 
     # Trainloader
     dataloader, dataset = create_dataloader(train_path, imgsz, batch_size, gs, opt,
-                                            hyp=hyp, augment=True, cache=opt.cache_images, rect=opt.rect, rank=rank,
+                                            hyp=hyp, augment=False, cache=opt.cache_images, rect=opt.rect, rank=rank,
                                             world_size=opt.world_size, workers=opt.workers,
                                             image_weights=opt.image_weights, quad=opt.quad, prefix=colorstr('train: '), kpt_label=kpt_label)
     mlc = np.concatenate(dataset.labels, 0)[:, 0].max()  # max label class
@@ -282,7 +282,7 @@ def train(hyp, opt, device, tb_writer=None):
     loss_fn = {
         'IKeypoint' : ComputeLoss(model, kpt_label=kpt_label),
         'IDetectHead' : ComputeLoss(model),
-        'IDetectBody' : ComputeLoss(model)
+        'IKeypointBody' : ComputeLoss(model, kpt_label=kpt_label)
     }
 
     logger.info(f'Image sizes {imgsz} train, {imgsz_test} test\n'
@@ -391,7 +391,7 @@ def train(hyp, opt, device, tb_writer=None):
                 if plots and ni < 33:
                     f = save_dir / f'train_batch{ni}.jpg'  # filename
                     if isinstance(targets, dict):
-                        if detect_layer == 'IKeypoint':
+                        if detect_layer == 'IKeypointBody':
                             plot_images(imgs, targets[detect_layer], paths, f, kpt_label=kpt_label)
                         else:
                             plot_images(imgs, targets[detect_layer], paths, f, kpt_label=0)
@@ -431,7 +431,7 @@ def train(hyp, opt, device, tb_writer=None):
                                                  wandb_logger=wandb_logger,
                                                  compute_loss=loss_fn,
                                                  is_coco=is_coco,
-                                                 kpt_label=kpt_label if detect_layer=='IKeypoint' else 0,
+                                                 kpt_label=kpt_label if detect_layer=='IKeypointBody' else 0,
                                                  detect_layer=detect_layer)
                 print("Evalutate: ", results)
 
@@ -573,9 +573,9 @@ if __name__ == '__main__':
     opt.world_size = int(os.environ['WORLD_SIZE']) if 'WORLD_SIZE' in os.environ else 1
     opt.global_rank = int(os.environ['RANK']) if 'RANK' in os.environ else -1
     set_logging(opt.global_rank)
-    if opt.global_rank in [-1, 0]:
-        check_git_status()
-        check_requirements(exclude=('pycocotools', 'thop'))
+    # if opt.global_rank in [-1, 0]:
+    #     check_git_status()
+    #     check_requirements(exclude=('pycocotools', 'thop'))
 
     # Resume
     wandb_run = check_wandb_resume(opt)
