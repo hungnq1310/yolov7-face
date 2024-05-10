@@ -541,6 +541,24 @@ class IKeypoint(nn.Module):
         yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
         return torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
 
+class IKeypointBody(IKeypoint):
+    """
+    IKeypointBody is a class that extends IKeypoint and is used to define the body of the keypoint detection network.
+    """
+    stride = None  # strides computed during build
+    export = False  # onnx export
+
+    def __init__(self, nc=80, anchors=(), nkpt=None, ch=(), inplace=True, dw_conv_kpt=False):  # detection layer
+        super().__init__(
+            nc=nc, 
+            anchors=anchors,
+            nkpt=nkpt,
+            ch=ch,
+            inplace=inplace,
+            dw_conv_kpt=dw_conv_kpt
+        )
+
+
 
 class Model(nn.Module):
     def __init__(self, cfg='yolov5s.yaml', ch=3, nc=None, anchors=None):  # model, input channels, number of classes
@@ -568,7 +586,7 @@ class Model(nn.Module):
 
         # Build strides, anchors Detect()
         for m in self.model[-5:]:
-            if isinstance(m, Detect) or isinstance(m, IDetect) or isinstance(m, IKeypoint) or isinstance(m, IDetectHead) or isinstance(m, IDetectBody):
+            if isinstance(m, Detect) or isinstance(m, IDetect) or isinstance(m, IKeypoint) or isinstance(m, IDetectHead) or isinstance(m, IDetectBody) or isinstance(m, IKeypointBody):
                 s = 256  # 2x min stride
                 m.inplace = self.inplace
                 #m.stride = torch.tensor([s / x.shape[-2] for x in self.forward(torch.zeros(1, ch, s, s))])  # forward
@@ -637,6 +655,9 @@ class Model(nn.Module):
 
             if isinstance(m, IDetectBody):
                 model_outputs.update({'IDetectBody' : x})
+                
+            if isinstance(m, IKeypointBody):
+                model_outputs.update({'IKeypointBody' : x})
 
             y.append(x if m.i in self.save else None)  # save output
 
@@ -753,7 +774,7 @@ def parse_model(d, ch):  # model_dict, input_channels(3)
             c2 = sum([ch[x] for x in f])
         elif m is ADD:
             c2 = sum([ch[x] for x in f])//2
-        elif m in [Detect, IDetect, IKeypoint, IDetectHead, IDetectBody]:
+        elif m in [Detect, IDetect, IKeypoint, IDetectHead, IDetectBody, IKeypointBody]:
             args.append([ch[x] for x in f])
             if isinstance(args[1], int):  # number of anchors
                 args[1] = [list(range(args[1] * 2))] * len(f)
