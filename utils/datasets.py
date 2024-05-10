@@ -487,9 +487,11 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                     with open(lb_file, 'r') as f:
                         l = []
                         for line_label in f.read().strip().splitlines():
-                            line_label = line_label.split()
+                            line_label = line_label.split()                                
                             if len(line_label) == 5 and kpt_label:
-                                line_label = line_label + [0]*15
+                                line_label = line_label + [0]*42
+                            elif len(line_label) == 20 and kpt_label:
+                                line_label = line_label +  [0]*27
                             l.append(line_label)
 
                         #l = [x.split() for x in f.read().strip().splitlines()]
@@ -518,7 +520,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                             assert l.shape[1] == 5, 'labels require 5 columns each'
                             assert (l[:, 1:5] <= 1).all(), '1::5 non-normalized or out of bounds coordinate labels'
 
-                        assert np.unique(l, axis=0).shape[0] == l.shape[0], 'duplicate labels'
+                        # assert np.unique(l, axis=0).shape[0] == l.shape[0], 'duplicate labels'
                     else:
                         ne += 1  # label empty
                         l = np.zeros((0, kpt_label*2+5), dtype=np.float32) if kpt_label else np.zeros((0, 5), dtype=np.float32)
@@ -676,9 +678,9 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         head_label = label[label[:,1] == 1]
         body_label = label[label[:,1] == 2]
         
-        head_label[:, 1], body_label[: 1] = 0, 0
+        head_label[:, 1], body_label[:, 1] = 0, 0
         
-        return torch.stack(img, 0), {'IKeypoint':face_label, 'IDetectHead':head_label[:,:6], 'IDetectBody':body_label[:,:6]}, path, shapes
+        return torch.stack(img, 0), {'IKeypoint':face_label, 'IDetectHead':head_label[:,:6], 'IKeypointBody':body_label}, path, shapes
         
         #return torch.stack(img, 0), {'IDetectHead':head_label}, path, shapes
 
