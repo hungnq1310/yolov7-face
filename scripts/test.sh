@@ -1,0 +1,11 @@
+CUDA_DEVICES_VISIBLE=1 python test.py \
+    --weights runs/train/yolov7-finetune-coco-body7/weights/best.pt \
+    --device 1 \
+    --batch-size 12 \
+    --data data/body_pose.yaml \
+    --task val \
+    --detect-layer IKeypointBody \
+    --conf-thres 0.4 \
+    --name val-body-finetune-coco \
+    --kpt-label 17 \
+    --exist-ok
