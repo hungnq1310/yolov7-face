@@ -58,7 +58,6 @@ def detect(opt):
         dataset = LoadImages(source, img_size=imgsz, stride=stride)
 
     # Run inference
-    kpt_label = 5 if detect_layer == 'face' else 0
         
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
@@ -75,12 +74,16 @@ def detect(opt):
         output = model(img, augment=opt.augment)
         name = list(output.keys())
 
-        if detect_layer == 'face' and kpt_label:
+        if detect_layer == 'face':
+            kpt_label = 5
             _key = 'IKeypoint' if 'IKeypoint' in name else None
         elif detect_layer == 'head':
             _key = 'IDetectHead' if 'IDetectHead' in name else None
+            kpt_label = 0
         else: 
-            _key = 'IDetectBody' if 'IDetectBody' in name else None
+            # _key = 'IDetectBody' if 'IDetectBody' in name else None
+            _key = 'IKeypointBody' if 'IKeypointBody' in name else None
+            kpt_label = 17
             
         pred = output[_key][0]
         print(pred[...,4].max())
@@ -203,7 +206,7 @@ if __name__ == '__main__':
     parser.add_argument('--detect-layer', type=str, default=None, help='Get layer name')
     opt = parser.parse_args()
     print(opt)
-    check_requirements(exclude=('tensorboard', 'pycocotools', 'thop'))
+    # check_requirements(exclude=('tensorboard', 'pycocotools', 'thop'))
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
