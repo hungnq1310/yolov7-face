@@ -1,17 +1,15 @@
 # change lr0:0.001 in data/hyp.scratch.tiny.yaml
-
-python -m torch.distributed.launch --nproc_per_node 2 --master_port 9527 train.py \
-  --epochs 30 \
+CUDA_VISIBLE_DEVICES=0 python train.py \
+  --epochs 20 \
   --workers 2 \
-  --device 0,1 \
-  --batch-size 128 \
-  --data data/widerface.yaml \
+  --device 0 \
+  --batch-size 32 \
+  --data data/scuthead.yaml \
   --img 640 640 \
-  --cfg cfg/yolov7-tiny.yaml \
-  --name yolov7-tiny-bodyheadface \
+  --cfg cfg/yolov7.yaml \
+  --name yolov7-finetune-scuthead-head \
   --hyp data/hyp.scratch.tiny.yaml \
-  --weight pretrained/yolov7-tiny-bodyhead/weights/best.pt \
+  --weight weights/pretrain-coco.pt \
   --multilosses True \
   --detect-layer 'IDetectHead' \
-  --sync-bn \
-  --freeze '78,79-80'
+  --freeze '106,107-108'
