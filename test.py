@@ -394,14 +394,15 @@ if __name__ == '__main__':
     parser.add_argument('--project', default='runs/test', help='save to project/name')
     parser.add_argument('--name', default='exp', help='save to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--kpt-label', type=int, default=5, help='number of keypoints')
+    parser.add_argument('--kpt-label', type=int, default=None, help='number of keypoints')
     parser.add_argument('--flip-test', action='store_true', help='Whether to run flip_test or not')
+    parser.add_argument('--detect-layer', default=None, help='test with detect_layer head')
     opt = parser.parse_args()
     opt.save_json |= opt.data.endswith('coco.yaml')
     opt.save_json_kpt |= opt.data.endswith('coco_kpts.yaml')
     opt.data = check_file(opt.data)  # check file
     print(opt)
-    check_requirements(exclude=('tensorboard', 'pycocotools', 'thop'))
+    # check_requirements(exclude=('tensorboard', 'pycocotools', 'thop'))
 
     if opt.task in ('train', 'val', 'test'):  # run normally
         test(opt.data,
@@ -424,6 +425,7 @@ if __name__ == '__main__':
              dump_img = opt.dump_img,
              kpt_label = opt.kpt_label,
              flip_test = opt.flip_test,
+             detect_layer= opt.detect_layer,
              )
 
     elif opt.task == 'speed':  # speed benchmarks
