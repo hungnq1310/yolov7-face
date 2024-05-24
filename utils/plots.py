@@ -93,7 +93,21 @@ def plot_skeleton_kpts(im, kpts, steps, orig_shape=None):
                         [255, 51, 51], [153, 255, 153], [102, 255, 102],
                         [51, 255, 51], [0, 255, 0], [0, 0, 255], [255, 0, 0],
                         [255, 255, 255]])
+    
+    l_pair = [[16, 14], [14, 12], [17, 15], 
+                [15, 13], [12, 13], [6, 12], 
+                [7, 13], [6, 7], [6, 8], 
+                [7, 9], [8, 10], [9, 11], 
+                [2, 3], [1, 2], [1, 3], 
+                [2, 4], [3, 5], [4, 6], [5, 7]]
+    line_color = [(0, 215, 255), (0, 255, 204), (0, 134, 255), (0, 255, 50),
+              (0, 255, 102), (77, 255, 222), (77, 196, 255), (77, 135, 255), (191, 255, 77), (77, 255, 77),
+              (77, 191, 255), (204, 77, 255), (77, 222, 255), (255, 156, 127),
+              (0, 127, 255), (255, 127, 77), (0, 77, 255), (255, 77, 36), 
+              (0, 77, 255), (0, 77, 255), (0, 77, 255), (0, 77, 255), (255, 156, 127), (255, 156, 127)]
 
+    part_line = {}
+    
     radius = 2
     num_kpts = len(kpts) // steps
     for kid in range(num_kpts):
@@ -104,7 +118,18 @@ def plot_skeleton_kpts(im, kpts, steps, orig_shape=None):
                 conf = kpts[steps * kid + 2]
                 if conf < 0.5:
                     continue
+                part_line[kid+1] = (int(x_coord), int(y_coord))
             cv2.circle(im, (int(x_coord), int(y_coord)), radius, (int(r), int(g), int(b)), -1)
+
+    for i, (start_p, end_p) in enumerate(l_pair):
+        if start_p in part_line and end_p in part_line:
+            start_xy = part_line[start_p]
+            end_xy = part_line[end_p]
+            if i < len(line_color):
+                cv2.line(im, start_xy, end_xy, line_color[i], 2)
+            else:
+                cv2.line(im, start_xy, end_xy, (255,255,255), 1)
+ 
 
 def plot_one_box_PIL(box, im, color=None, label=None, line_thickness=None):
     # Plots one bounding box on image 'im' using PIL
