@@ -361,7 +361,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.stride = stride
         self.path = path
         self.kpt_label = kpt_label
-        self.flip_index = [1, 0, 2, 4, 3]
+        self.flip_index = [0, 2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 14, 13, 16, 15]
 
         try:
             f = []  # image files
@@ -489,9 +489,9 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                         for line_label in f.read().strip().splitlines():
                             line_label = line_label.split()                                
                             if len(line_label) == 5 and kpt_label:
-                                line_label = line_label + [0]*42
+                                line_label = line_label + [0]*51
                             elif len(line_label) == 20 and kpt_label:
-                                line_label = line_label +  [0]*27
+                                line_label = line_label +  [0]*36
                             l.append(line_label)
 
                         #l = [x.split() for x in f.read().strip().splitlines()]
@@ -682,7 +682,9 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         
         return torch.stack(img, 0), {'IKeypoint':face_label, 'IDetectHead':head_label[:,:6], 'IKeypointBody':body_label}, path, shapes
         
-        #return torch.stack(img, 0), {'IDetectHead':head_label}, path, shapes
+        # return torch.stack(img, 0), {'IKeypointBody':body_label}, path, shapes
+        # return torch.stack(img, 0), {'IDetectHead':head_label[:,:6]}, path, shapes
+        # return torch.stack(img, 0), {'IKeypoint':face_label}, path, shapes
 
     @staticmethod
     def collate_fn4(batch):
