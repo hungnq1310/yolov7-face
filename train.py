@@ -431,7 +431,7 @@ def train(hyp, opt, device, tb_writer=None):
                                                  wandb_logger=wandb_logger,
                                                  compute_loss=loss_fn,
                                                  is_coco=is_coco,
-                                                 kpt_label=kpt_label if detect_layer=='IKeypointBody' else 0,
+                                                 kpt_label=kpt_label,
                                                  detect_layer=detect_layer)
                 print("Evalutate: ", results)
 
