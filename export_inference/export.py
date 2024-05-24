@@ -104,6 +104,7 @@ if __name__ == "__main__":
     # set Detect() layer grid export
     model.model[-1].export = not opt.grid
     model.model[-2].export = not opt.grid
+    model.model[-3].export = not opt.grid
 
     y = model(img)  # dry run
 
