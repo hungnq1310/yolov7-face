@@ -311,8 +311,8 @@ class ONNX_TRT(nn.Module):
 
     def forward(self, x):
         # body layer
-        body = x["IDetectBody"][0]
-        bnum_det, bboxes, bscores, bcategories = self._convert(body)
+        body = x["IKeypointBody"][0]
+        # bnum_det, bboxes, bscores, bcategories = self._convert(body)
 
         # head layer
         head = x["IDetectHead"][0]
@@ -322,10 +322,11 @@ class ONNX_TRT(nn.Module):
         face = x["IKeypoint"][0]
 
         return (
-            bnum_det,
-            bboxes,
-            bscores,
-            bcategories,
+            # bnum_det,
+            # bboxes,
+            # bscores,
+            # bcategories,
+            body,
             hnum_det,
             hboxes,
             hscores,
@@ -376,8 +377,9 @@ class ONNX_ORT(nn.Module):
 
     def forward(self, x):
         # body layer
-        body = x["IDetectBody"][0]
-        bX, _, bboxes, bcategories, bscores, _ = self._convert(body)
+        body = x["IKeypointBody"][0]
+        get_kpt = [x for x in range(6,57)]
+        bX, _, bboxes, bcategories, bscores, blmks = self._convert(body, get_kpt)
         bX = bX.unsqueeze(1).float()
         onnx_body = torch.cat(
             [
@@ -385,6 +387,7 @@ class ONNX_ORT(nn.Module):
                 bboxes,
                 bcategories,
                 bscores,
+                blmks,
             ],
             1,
         )
