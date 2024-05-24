@@ -3,8 +3,8 @@
 # train: datasets/hico_20160224_det/images/train2015/
 #train: datasets/crowdpose/images
 
-train: datasets/coco_kpt17/images/train2017
-val: datasets/coco_kpt17/images/val2017
+train: datasets/cocokpt17-v0/images/train
+val: datasets/cocokpt17-v0/images/val
 
 
 # number of classes
