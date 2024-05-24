@@ -6,9 +6,9 @@ CUDA_VISIBLE_DEVICES=0 python train.py \
   --data data/body_pose.yaml \
   --img 640 640 \
   --cfg cfg/yolov7.yaml \
-  --name yolov7-pretrain-coco \
+  --name yolov7-pretrain-coco-aug \
   --hyp data/hyp.scratch.tiny.yaml \
-  --weight weights/yolov7-face.pt \
+  --weight weights/yolov7.pt \
   --multilosses True \
   --kpt-label 17 \
   --detect-layer IKeypointBody \
