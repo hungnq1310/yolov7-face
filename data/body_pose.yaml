@@ -1,6 +1,11 @@
 # train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
-train: datasets/custom/images/train
-val: datasets/custom/images/test
+# pretrain: datasets/custom/images/train
+# train: datasets/hico_20160224_det/images/train2015/
+#train: datasets/crowdpose/images
+
+train: datasets/coco_kpt17/images/train2017
+val: datasets/coco_kpt17/images/val2017
+
 
 # number of classes
 nc: 1
