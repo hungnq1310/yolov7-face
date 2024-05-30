@@ -159,7 +159,7 @@ class ComputeLoss:
                 pxy = ps[:, :2].sigmoid() * 2. - 0.5
                 pwh = (ps[:, 2:4].sigmoid() * 2) ** 2 * anchors[i]
                 pbox = torch.cat((pxy, pwh), 1)  # predicted box
-                iou = bbox_iou(pbox.T, tbox[i], x1y1x2y2=False, EIoU=True)  # iou(prediction, target)
+                iou = bbox_iou(pbox.T, tbox[i], x1y1x2y2=False, CIoU=True)  # iou(prediction, target)
                 lbox += (1.0 - iou).mean()  # iou loss
                 if self.kpt_label:
                     #Direct kpt prediction
@@ -167,7 +167,7 @@ class ComputeLoss:
                     pkpt_y = ps[:, 7::3] * 2. - 0.5
                     pkpt_score = ps[:, 8::3]
                     #mask
-                    kpt_mask = (tkpt[i][:, 0::2] != 0)
+                    kpt_mask = (tkpt[i][:, 0::2] != 0) # compute even if v==1
                     lkptv += self.BCEcls(pkpt_score, kpt_mask.float()) 
                     #l2 distance based loss
                     lkpt += (self.kptloss(tkpt[i][:,0::2], pkpt_x, kpt_mask) + self.kptloss(tkpt[i][:,1::2], pkpt_y, kpt_mask)) / 2
