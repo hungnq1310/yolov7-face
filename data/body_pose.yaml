@@ -3,8 +3,8 @@
 # train: datasets/hico_20160224_det/images/train2015/
 #train: datasets/crowdpose/images
 
-train: /kaggle/input/cocokpt-multihead/images/train
-val: /kaggle/input/cocokpt-multihead/images/val
+train: /kaggle/input/cocokpt17/images/train
+val: /kaggle/input/cocokpt17/images/val
 
 
 # number of classes
